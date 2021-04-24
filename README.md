@@ -7,11 +7,11 @@ A repository to house er ("encrypt right" / "enoch root") code, including:
 
 	libenoch : dynamic Linux library that supports core functions
 
-Why a Dual Acronym?
+**Why a Dual Acronym?**
 
 In a nod to er's plausible denialability function, even its name is equivocable.
 
-why Enpch Root?
+**why Enpch Root?**
 
 Enoch Root, also known as Enoch the Red, is a recurring character through The Baroque Cycle, Cryptonomicon, and Fall, or Dodge in Hell). Although he is not one of the main protagonists of the books, he often appears at crucial times and places. And his surname is "root".Thank you Neal Stephenson
 
