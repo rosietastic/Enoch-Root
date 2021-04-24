@@ -3,26 +3,31 @@ Enoch Root related Cryptography
 
 A repository to house er ("encrypt right" / "enoch root") code, including:
 
-  er : "encrypt right" / "enoch root" one time pad management command line utility
-  
-  libenoch : dynamic Linux library that supports core functions
+	er : "encrypt right" / "enoch root" one time pad management command line utility
+
+	libenoch : dynamic Linux library that supports core functions
 
 Why a Dual Acronym?
+
 In a nod to er's plausible denialability function, even its name is equivocable.
 
 why Enpch Root?
+
 Enoch Root, also known as Enoch the Red, is a recurring character through The Baroque Cycle, Cryptonomicon, and Fall, or Dodge in Hell). Although he is not one of the main protagonists of the books, he often appears at crucial times and places. And his surname is "root".Thank you Neal Stephenson
 https://baroquecycle.fandom.com/wiki/Enoch_Root
 
 Why One Time Pads?
+
 If based upon true random numbers and implemented properly, they provide mathematically proven "perfect encryption" and functions such as "plausible denialability".
 
 What is a Pyx Assessment?
+
 Another nod to history, an assessment of the quality and suitability of the OTP random numbers, through a number of tests.
 https://en.wikipedia.org/wiki/Trial_of_the_Pyx
 https://www.royalmint.com/discover/uk-coins/history-of-the-trial-of-the-pyx/
 
 Objective
+
 One Time Pad management to encrypt, decrypt, assess and deny. 
 
 Functionality and er examples
@@ -43,6 +48,7 @@ Additional flags include verbose output (-v), selection of pyx assessment byte o
 
 Interfaces with standard Linux randon number generation (/dev/random) and defaults to use of the "TrueRNG3" hardware random number generator (HRNG) if present (/dev/TrueRNG). TrueRNG3 provides hardware random number generation by leveraging the "avalanche effect" of semi-conductors. TrueRNG3 is fast and performs very well at the Pyx Assessment.
 https://ubld.it/truerng_v3
+
 
 er Usage 
 er -h
@@ -70,6 +76,7 @@ er : -G : Generate OTP/PD OTP, -E : Encrypt, -D : Decrypt, -P : Pyx
 -v : verbose output, -r : random number generation device, -b : Pyx binary mode
 
 er : One Time Pad management to generate, encrypt, decrypt, assess and deny
+
 
 libenoch Summary
 Dynamic library providing core OTP cryptography functions supporting encryption, decryption, generation and assessment. 
