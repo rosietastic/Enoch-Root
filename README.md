@@ -11,7 +11,7 @@ A repository to house er ("encrypt right" / "enoch root") code, including:
 
 In a nod to er's plausible denialability function, even its name is equivocable.
 
-**why Enpch Root?**
+**Why Enpch Root?**
 
 Enoch Root, also known as Enoch the Red, is a recurring character through The Baroque Cycle, Cryptonomicon, and Fall, or Dodge in Hell). Although he is not one of the main protagonists of the books, he often appears at crucial times and places. And his surname is "root".Thank you Neal Stephenson
 
@@ -37,7 +37,7 @@ One Time Pad management to encrypt, decrypt, assess and deny.
 
 Generate a new OTP by specifying size:
 
-	er -G -s512M 
+	er -G -s512M -pnew.otp
 
 Generate a new OTP from a clear file and an encrypted file for plausible deniability:
 
