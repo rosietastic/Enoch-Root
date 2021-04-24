@@ -111,6 +111,49 @@ er : -G : Generate OTP/PD OTP, -E : Encrypt, -D : Decrypt, -P : Pyx
 
 **Example Pyx Assessment output:**
 
+	er -P -ptest.otp
+
+Pyx Trial Assessment
+
+OVERALL		: PASS && PASS && PASS && PASS && PASS = PASS
+
+One Time Pad Density
+
+Entropy : 7.999982 bits per byte.
+
+Optimum compression of OTP file size 10485760 bytes by 0 percent
+
+[GOOD 		= Entropy close to 8 bits, compression 0 percent]
+
+
+One Time Pad Distribution
+
+Chi Square : for 10485760 samples is 261.00
+
+Value would be exceeded randomly 38.47 percent of the times.
+
+[GOOD 		= 10 percent to 90 percent]
+
+[SUSPECT 	= 5 to 10 percent or 90 to 95 percent]
+
+[WORSE		= 1 to 5 percent or 95 to 99 percent]
+
+[WORST		= 0 to 1 percent or 99 to 100 percent]
+
+Arithmetic mean of data bytes is 127.4685
+
+[RANDOM 	= 127.5]
+
+Monte Carlo value for Pi is 3.141701943 (error 0.00 percent)
+
+[RANDOM		= error 0.06 percent]
+
+Serial correlation coefficient is -0.000180
+
+[RANDOM		= 0.0]
+
+[PREDICTED	= 1.0]
+
 
 **libenoch Summary**
 
