@@ -17,11 +17,11 @@ Enoch Root, also known as Enoch the Red, is a recurring character through The Ba
 
 https://baroquecycle.fandom.com/wiki/Enoch_Root
 
-Why One Time Pads?
+**Why One Time Pads?**
 
 If based upon true random numbers and implemented properly, they provide mathematically proven "perfect encryption" and functions such as "plausible denialability".
 
-What is a Pyx Assessment?
+**What is a Pyx Assessment?**
 
 Another nod to history, an assessment of the quality and suitability of the OTP random numbers, through a number of tests.
 
@@ -29,44 +29,47 @@ https://en.wikipedia.org/wiki/Trial_of_the_Pyx
 
 https://www.royalmint.com/discover/uk-coins/history-of-the-trial-of-the-pyx/
 
-Objective
+**Objective**
 
 One Time Pad management to encrypt, decrypt, assess and deny. 
 
-Functionality and er examples
+**Functionality and er examples**
 
 Generate a new OTP by specifying size:
 
-er -G -s512M 
+	er -G -s512M 
 
 Generate a new OTP from a clear file and an encrypted file for plausible deniability:
 
-er -G -iclear.inp -eexisting.enc -pnew_pd.otp
+	er -G -iclear.inp -eexisting.enc -pnew_pd.otp
 
 Encrypt a clear file with an existing OTP to create a new encrypted file
 
-er -E -iclear.inp -pexisting.otp -oencrypted.out
+	er -E -iclear.inp -pexisting.otp -oencrypted.out
 
 Encrypt a clear file with a dynamically created OTP to create a new encrypted file
 
-er -E -iclear.inp -pnew.otp -oencrypted.out
+	er -E -iclear.inp -pnew.otp -oencrypted.out
 
 Decrypt an input encrypted file with an existing OTP to create a clear file
 
-er -D -iencrypted.inp -pexisting.otp -oclear.out
+	er -D -iencrypted.inp -pexisting.otp -oclear.out
 
 Perform an assessment of an input OTP; the "Pyx Assessment" for ascertaining worthiness of random numbers
 
-er -P -pexisting.otp
+	er -P -pexisting.otp
 
 Additional flags include verbose output (-v), selection of pyx assessment byte or binary mode (-b) and the selection of a specific Linux device for random number input (-r)
+
+**Random Number Generation**
 
 Interfaces with standard Linux randon number generation (/dev/random) and defaults to use of the "TrueRNG3" hardware random number generator (HRNG) if present (/dev/TrueRNG). TrueRNG3 provides hardware random number generation by leveraging the "avalanche effect" of semi-conductors. TrueRNG3 is fast and performs very well at the Pyx Assessment.
 
 https://ubld.it/truerng_v3
 
 
-er Usage 
+**er Usage** 
+
 er -h
 
 er : Equivocable dual acronym "Encrypt Right"/"Enoch Root" (v0.1;libenoch:v0.1)
@@ -107,7 +110,7 @@ er : -G : Generate OTP/PD OTP, -E : Encrypt, -D : Decrypt, -P : Pyx
 -v : verbose output, -r : random number generation device, -b : Pyx binary mode
 
 
-libenoch Summary
+**libenoch Summary**
 
 Dynamic library providing core OTP cryptography functions supporting encryption, decryption, generation and assessment. 
 
