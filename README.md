@@ -2,7 +2,9 @@
 Enoch Root related Cryptography
 
 A repository to house er ("encrypt right" / "enoch root") code, including:
+
   er : "encrypt right" / "enoch root" one time pad management command line utility
+  
   libenoch : dynamic Linux library that supports core functions
 
 Why a Dual Acronym?
