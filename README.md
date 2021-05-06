@@ -78,14 +78,14 @@ er : -G : Generate OTP/PD OTP, -E : Encrypt, -D : Decrypt, -P : Pyx
 
 [-i inputfile] [-e inputfile] [-p otp file] [-o outputfile]
 
-[-s size] [-r devname] [-v] [-b| [-h]
+[-s size] [-r devname] [-v] [-b] [-f] [-h]
 
 
--G -s<size BKMG> -pfsp || -G -ifsp -efsp -pfsp
+-G -s<size BKMG> -pfsp || -G -ifsp -efsp -pfsp -f
 
 [-G -s1M -pnew.otp]
 
-[-G -iclear.in -eexisting.enc -pnew.otp]
+[-G -iclear.in -eexisting.enc -pnew.otp -f]
 
 
 -E -ifsp -pfsp -ofsp  || -E -ifsp -pnewfsp -ofsp
@@ -95,9 +95,11 @@ er : -G : Generate OTP/PD OTP, -E : Encrypt, -D : Decrypt, -P : Pyx
 [-E -iclear.in -pnew.otp -oencrypted.out]
 
 
--D -ifsp -pfsp -ofsp
+-D -ifsp -pfsp -ofsp || -D -ifsp -pfsp -ofsp -s<size BKMG>
 
 [-D -iencrypted.in -pexisting.otp -oclear.out]
+
+[-D -iencrypted.in -pexisting.otp -oclear.out -s1M]
 
 
 -P -pfsp -b || -P -pfsp -ofsp -b
@@ -107,7 +109,7 @@ er : -G : Generate OTP/PD OTP, -E : Encrypt, -D : Decrypt, -P : Pyx
 [-P -pexisting.otp -oterse.rpt] [-b]
 
 
--v : verbose output, -r : random number generation device, -b : Pyx binary mode
+-v : Verbose output, -r : RNG device, -b : Pyx binary mode, -f : Fill PD OTP
 
 **Example Pyx Assessment output:**
 
@@ -178,6 +180,8 @@ typedef structure object as an interface:
 	int	cmd_mode;
 
 	int	pyx_binary;
+
+	int	padout_pdotp;
 
 	FILE	*input;
 
