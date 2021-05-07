@@ -156,6 +156,10 @@ Serial correlation coefficient is -0.000180
 
 [PREDICTED	= 1.0]
 
+**Features**
+
+Features of the er utility include the ability to generate one time pads to encrypt a whole specified file, or simply by size alone. Also, existing encrypted files can be used to generate alternate one time pads to facilitate plausible deniability. Plausibly deniable one time pads can be filled to match the size of the original one time pad, if the target alternate clear file is smaller than the original. Decryption allows for a whole file (if the one time pad is large enough) or can be restricted by user specified size. 
+
 
 **libenoch Summary**
 
