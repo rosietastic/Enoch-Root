@@ -13,7 +13,7 @@ One Time Pad management to encrypt, decrypt, assess and deny.
 
 **Why a Dual Acronym?**
 
-In a nod to er's plausible denialability function, even its name is equivocable.
+In a nod to er's plausible deniability function, even its name is equivocable.
 
 **Why Enoch Root?**
 
@@ -23,7 +23,7 @@ https://baroquecycle.fandom.com/wiki/Enoch_Root
 
 **Why One Time Pads?**
 
-If based upon true random numbers and implemented properly, they provide mathematically proven "perfect encryption" and functions such as "plausible denialability".
+If based upon true random numbers and implemented properly, they provide mathematically proven "perfect encryption" and functions such as "plausible deniability".
 
 **What is a Pyx Assessment?**
 
@@ -59,11 +59,11 @@ Perform an assessment of an input OTP; the "Pyx Assessment" for ascertaining wor
 
 	er -P -pexisting.otp
 
-Additional flags include verbose output (-v), selection of pyx assessment byte or binary mode (-b) and the selection of a specific Linux device for random number input (-r)
+Additional flags include verbose output (-v), selection of pyx assessment byte or binary mode (-b) and the selection of a specific Linux device for random number input (-r). Plausibly deniable one time pads can be "filled" with random data, by use of the -f flag to match the size of the original one time pad, if the target alternate clear file is smaller than the original.
 
 **Random Number Generation**
 
-Interfaces with standard Linux random number generation (/dev/random) and defaults to use of the "TrueRNG3" hardware random number generator (HRNG) if present (/dev/TrueRNG). TrueRNG3 provides hardware random number generation by leveraging the "avalanche effect" of semi-conductors. TrueRNG3 is fast and performs very well at the Pyx Assessment.
+While standard Linux random number generation (/dev/random) can be used, the er utility defaults to use of the "TrueRNG3" hardware random number generator (HRNG) if present (/dev/TrueRNG). TrueRNG3 provides hardware random number generation by leveraging the "avalanche effect" of semi-conductors. TrueRNG3 is fast and performs very well at the Pyx Assessment.
 
 https://ubld.it/truerng_v3
 
@@ -158,14 +158,14 @@ Serial correlation coefficient is -0.000180
 
 **Features**
 
-Features of the er utility include the ability to generate one time pads to encrypt a whole specified file, or simply by size alone. Also, existing encrypted files can be used to generate alternate one time pads to facilitate plausible deniability. Plausibly deniable one time pads can be filled to match the size of the original one time pad, if the target alternate clear file is smaller than the original. Decryption allows for a whole file (if the one time pad is large enough) or can be restricted by user specified size. 
+Features of the er utility include the ability to generate one time pads to encrypt a whole specified file, or simply by size alone. Also, existing encrypted files can be used to generate alternate one time pads to facilitate plausible deniability. Plausibly deniable one time pads can be "filled" with random data to match the size of the original one time pad, if the target alternate clear file is smaller than the original. Decryption allows for a whole file (if the one time pad is large enough) or can be restricted by user specified size. 
 
 
 **libenoch Summary**
 
 Dynamic library providing core OTP cryptography functions supporting encryption, decryption, generation and assessment. 
 
-typedef structure object as an interface:
+A typedef "options_t" structure object is used as a library interface for applications:
 
 	typedef struct{ 
 
