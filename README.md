@@ -249,3 +249,6 @@ Getting libenoch version details
 
 	void pyx_end (double *r_ent, double *r_chisq, double *r_mean, double *r_montepicalc, double *r_scc)
 
+**Installation of the er utility and libenoch dynamic library**
+
+Please see the install_notes.txt file (in the Enoch-Root/projects folder) for specific details on how to clone the repository, compile and link the code and other notes on implementation and usage.
