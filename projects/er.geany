@@ -1,0 +1,66 @@
+[editor]
+line_wrapping=false
+line_break_column=72
+auto_continue_multiline=true
+
+[file_prefs]
+final_new_line=true
+ensure_convert_new_lines=false
+strip_trailing_spaces=false
+replace_tabs=false
+
+[indentation]
+indent_width=4
+indent_type=1
+indent_hard_tab_width=8
+detect_indent=false
+detect_indent_width=false
+indent_mode=2
+
+[project]
+name=er
+base_path=/home/rosie/Enoch-Root
+description=Encrypt Right / Enoch Root
+file_patterns=
+
+[long line marker]
+long_line_behaviour=1
+long_line_column=72
+
+[files]
+current_page=0
+FILE_NAME_0=2;C;0;EUTF-8;1;1;0;%2Fhome%2Frosie%2FEnoch-Root%2Fprojects%2Fer%2Fer.c;0;4
+FILE_NAME_1=1241;C++;0;EUTF-8;1;1;0;%2Fhome%2Frosie%2FEnoch-Root%2Fprojects%2Fer%2Flibenoch.h;0;4
+
+[VTE]
+last_dir=/home/rosie
+
+[build-menu]
+EX_01_LB=
+EX_01_CM=
+EX_01_WD=
+CFT_01_LB=_Build
+CFT_01_CM=gcc -Wall -o "%e" "%p/projects/er/%f" -lm -lenoch -L"%p/projects/libenoch/libenoch"
+CFT_01_WD=%p/projects/er
+filetypes=C;
+CFT_00_LB=_Compile
+CFT_00_CM=gcc -Wall -c "%f" 
+CFT_00_WD=%p/projects/er
+NF_00_LB=_Make
+NF_00_CM=
+NF_00_WD=
+NF_01_LB=Make Custom _Target...
+NF_01_CM=
+NF_01_WD=
+NF_02_LB=Make _Object
+NF_02_CM=
+NF_02_WD=
+NF_03_LB=
+NF_03_CM=
+NF_03_WD=
+EX_00_LB=_Execute
+EX_00_CM=
+EX_00_WD=
+CFT_02_LB=_Lint
+CFT_02_CM=
+CFT_02_WD=
