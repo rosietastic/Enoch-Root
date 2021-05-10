@@ -7,6 +7,8 @@ A repository to house er ("encrypt right" / "enoch root") code, including:
 
 	libenoch : dynamic Linux library that supports core functions
 
+Please see the wiki, with a summary below. 
+
 **Objective**
 
 One Time Pad management to encrypt, decrypt, assess and deny. 
