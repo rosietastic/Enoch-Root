@@ -7,7 +7,10 @@ A repository to house er ("encrypt right" / "enoch root") code, including:
 
 	libenoch : dynamic Linux library that supports core functions
 
-Please see the wiki, with a summary below. 
+Please see the wiki:
+
+https://github.com/rosietastic/Enoch-Root/wiki
+
 
 **Objective**
 
@@ -253,4 +256,4 @@ Getting libenoch version details
 
 **Installation of the er utility and libenoch dynamic library**
 
-Please see the install_notes.txt file (in the Enoch-Root/projects folder) for specific details on how to clone the repository, compile and link the code and other notes on implementation and usage.
+Please see the install_notes.txt file (in the Enoch-Root/projects folder) or the wiki for specific details on how to clone the repository, compile and link the code and other notes on implementation and usage.
