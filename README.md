@@ -1,6 +1,9 @@
 # Enoch-Root
 Enoch Root related Cryptography
 
+Contact me (Paul Rose / "rosietastic") :
+rosietastic@lavabit.com
+
 A repository to house er ("encrypt right" / "enoch root") code, including:
 
 	er : "encrypt right" / "enoch root" one time pad management command line utility
