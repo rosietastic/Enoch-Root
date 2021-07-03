@@ -182,6 +182,7 @@ double pochisq(
 	double a, y, s;
 	double e, c, z;
 	int even;	    	    /* true if df is an even number */
+	y=1;
 
 	if (x <= 0.0 || df < 1)
 		return 1.0;
@@ -228,7 +229,7 @@ static double pyx_log2(double x)
 
 int enoch(char *version)
 {
-	strncpy(version, LE_VERSION, (strlen(LE_VERSION)+1)); 
+	strncpy(version, LE_VERSION, 5); 
 	return TRUE;
 }
 
@@ -378,7 +379,7 @@ int set_default_device(options_t *options)
 	if ((options->device = open(options->devname, O_RDONLY)) < 0) {
 		strncpy(options->devname, DEV_DEFAULT_2, DEV_PATH_MAX);
 		if ((options->device = open(options->devname, O_RDONLY)) < 0) {
-			strncpy(options->errmsg, ERR_DEF_DEV, (strlen(ERR_DEF_DEV)+1)); 
+			strncpy(options->errmsg, ERR_DEF_DEV, ERR_MSG_MAXLEN); 
 			return(EXIT_FAILURE);
 		}    
 	}
@@ -408,11 +409,11 @@ struct stat sb;
 		while (keep_count-- > 0) {
 			if (read(options->device, &byte, 1) > 0) {
 				if (fputc(byte, options->otp) == EOF) {
-					strncpy(options->errmsg, ERR_WRITE_OTP, (strlen(ERR_WRITE_OTP)+1)); 
+					strncpy(options->errmsg, ERR_WRITE_OTP, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
 			} else {
-				strncpy(options->errmsg, ERR_GET_DEV, (strlen(ERR_GET_DEV)+1)); 
+				strncpy(options->errmsg, ERR_GET_DEV, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 		}
@@ -425,28 +426,28 @@ struct stat sb;
 			keep_count++;
 			if ((enc_ch = fgetc(options->encrypted) ) != EOF) {
 				if (fputc((clear_ch^enc_ch), options->otp) == EOF) {
-					strncpy(options->errmsg, ERR_WRITE_PDOTP, (strlen(ERR_WRITE_PDOTP)+1)); 
+					strncpy(options->errmsg, ERR_WRITE_PDOTP, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
 			} else {
-				strncpy(options->errmsg, ERR_ENC_SHORT, (strlen(ERR_ENC_SHORT)+1)); 
+				strncpy(options->errmsg, ERR_ENC_SHORT, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 		}
 
 		if (keep_count == 0) {
-			strncpy(options->errmsg, ERR_READ_INPUT, (strlen(ERR_READ_INPUT)+1)); 
+			strncpy(options->errmsg, ERR_READ_INPUT, ERR_MSG_MAXLEN); 
 			return(EXIT_FAILURE);
 		} else
 			if(options->padout_pdotp) {
 				if (stat(options->encrypted_fsp, &sb)==-1) {
-					strncpy(options->errmsg, ERR_READ_STAT, (strlen(ERR_READ_STAT)+1)); 
+					strncpy(options->errmsg, ERR_READ_STAT, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}			
 				for(i=keep_count; i<(unsigned long long)sb.st_size; i++) {
 					if (read(options->device, &byte, 1) > 0) {
 						if (fputc(byte, options->otp) == EOF) {
-							strncpy(options->errmsg, ERR_WRITE_OTP, (strlen(ERR_WRITE_OTP)+1)); 
+							strncpy(options->errmsg, ERR_WRITE_OTP, ERR_MSG_MAXLEN); 
 							return(EXIT_FAILURE);
 						}
 					}
@@ -474,17 +475,17 @@ int inp_fine = FALSE;
 			inp_fine = TRUE;
 			if ((otp_ch = fgetc(options->otp) ) != EOF) {
 				if ((fputc((clear_ch^otp_ch), options->output)) == EOF) {
-					strncpy(options->errmsg, ERR_WRITE_ENC, (strlen(ERR_WRITE_ENC)+1)); 
+					strncpy(options->errmsg, ERR_WRITE_ENC, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
 			} else {
-				strncpy(options->errmsg, ERR_OTP_SHORT, (strlen(ERR_OTP_SHORT)+1)); 
+				strncpy(options->errmsg, ERR_OTP_SHORT, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 		}
 
 		if (inp_fine == FALSE) {
-			strncpy(options->errmsg, ERR_READ_INPUT, (strlen(ERR_READ_INPUT)+1)); 
+			strncpy(options->errmsg, ERR_READ_INPUT, ERR_MSG_MAXLEN); 
 			return(EXIT_FAILURE);
 		}
 
@@ -495,15 +496,15 @@ int inp_fine = FALSE;
 		while ((clear_ch = fgetc(options->input) ) != EOF) {
 			if (read(options->device, &byte, 1) > 0) {
 				if (fputc(byte, options->otp) == EOF) {
-					strncpy(options->errmsg, ERR_WRITE_OTP, (strlen(ERR_WRITE_OTP)+1)); 
+					strncpy(options->errmsg, ERR_WRITE_OTP, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
 				if (fputc(clear_ch^byte, options->output) == EOF) {
-					strncpy(options->errmsg, ERR_WRITE_ENC, (strlen(ERR_WRITE_ENC)+1)); 
+					strncpy(options->errmsg, ERR_WRITE_ENC, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
 			} else {
-				strncpy(options->errmsg, ERR_GET_DEV, (strlen(ERR_GET_DEV)+1)); 
+				strncpy(options->errmsg, ERR_GET_DEV, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 		}
@@ -528,22 +529,22 @@ struct stat sb;
 
 	if(options->size>0) {
 		if (stat(options->input_fsp, &sb)==-1) {
-			strncpy(options->errmsg, ERR_READ_STAT, (strlen(ERR_READ_STAT)+1)); 
+			strncpy(options->errmsg, ERR_READ_STAT, ERR_MSG_MAXLEN); 
 			return(EXIT_FAILURE);
 		}
 
 		if(options->size>(unsigned long long)sb.st_size) {
-			strncpy(options->errmsg, ERR_ENC_SIZE, (strlen(ERR_ENC_SIZE)+1)); 
+			strncpy(options->errmsg, ERR_ENC_SIZE, ERR_MSG_MAXLEN); 
 			return(EXIT_FAILURE);
 		}
 
 		if (stat(options->otp_fsp, &sb)==-1) {
-			strncpy(options->errmsg, ERR_OTP_STAT, (strlen(ERR_OTP_STAT)+1)); 
+			strncpy(options->errmsg, ERR_OTP_STAT, ERR_MSG_MAXLEN); 
 			return(EXIT_FAILURE);
 		}
 
 		if(options->size>(unsigned long long)sb.st_size) {
-			strncpy(options->errmsg, ERR_OTP_SIZE, (strlen(ERR_OTP_SIZE)+1)); 
+			strncpy(options->errmsg, ERR_OTP_SIZE, ERR_MSG_MAXLEN); 
 			return(EXIT_FAILURE);
 		}
 	}
@@ -552,20 +553,20 @@ struct stat sb;
 		inp_fine = TRUE;
 		if ((otp_ch = fgetc(options->otp) ) != EOF) {
 			if ((fputc((enc_ch^otp_ch), options->output)) == EOF) {
-				strncpy(options->errmsg, ERR_WRITE_DEC, (strlen(ERR_WRITE_DEC)+1)); 
+				strncpy(options->errmsg, ERR_WRITE_DEC, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 			if (options->size >0)
 				if ((++keep_count)>=options->size)
 						break;
 		} else {
-			strncpy(options->errmsg, ERR_OTP_SHORT, (strlen(ERR_OTP_SHORT)+1)); 
+			strncpy(options->errmsg, ERR_OTP_SHORT, ERR_MSG_MAXLEN); 
 			return(EXIT_FAILURE);
 		}
 	}
 
 	if (inp_fine == FALSE) {
-		strncpy(options->errmsg, ERR_READ_INPUT, (strlen(ERR_READ_INPUT)+1)); 
+		strncpy(options->errmsg, ERR_READ_INPUT, ERR_MSG_MAXLEN); 
 		return(EXIT_FAILURE);
 	}
 

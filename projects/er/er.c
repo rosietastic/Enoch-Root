@@ -155,7 +155,7 @@ extern int opterr, optind;
 
 void	verbose(int mode, char *ver, int cmd, char *progname, options_t *options);
 int		validate_cli_multicmd(int opt, options_t *options, char *progname, int *cmd, int *onecmd, char *ver);
-int		validate_cli_options(int opt, options_t *options, char *progname, int *cmd, int *onecmd, char *ver);
+int		validate_cli_options(int opt, options_t *options, char *progname, int *cmd, char *ver);
 int 	validate_cli_command(int cmd, options_t *options);
 void	usage(char *ver, char *progname);
 int		factor_suffix(options_t *options);
@@ -207,7 +207,7 @@ int	main(int argc, char *argv[]) {
 	optind = 1;
 
 	while ((opt = getopt(argc, argv, OPTSTR)) != EOF)
-		if (validate_cli_options(opt, &options, argv[0], &cmd, &onecmd, &(ver[0]))!=EXIT_SUCCESS) {
+		if (validate_cli_options(opt, &options, argv[0], &cmd, &(ver[0]))!=EXIT_SUCCESS) {
 			fprintf(stderr,"%s\n", options.errmsg);
 			if(tidy_up(ptrfunc, &options)!=EXIT_SUCCESS)
 				fprintf(stderr,"%s\n", options.errmsg);
@@ -236,7 +236,7 @@ int	main(int argc, char *argv[]) {
 	}
 
 	if (options.cmd_index==ZCMD) {
-		strncpy(options.errmsg, ERR_CHK_ZCMD, (strlen(ERR_CHK_ZCMD)+1)); 
+		strncpy(options.errmsg, ERR_CHK_ZCMD, ERR_MSG_MAXLEN); 
 		fprintf(stderr,"%s\n", options.errmsg);
 		if(tidy_up(ptrfunc, &options)!=EXIT_SUCCESS)
 			fprintf(stderr,"%s\n", options.errmsg);
@@ -273,15 +273,15 @@ int	main(int argc, char *argv[]) {
 
 int tidy_up(FUNC *ptrfunc, options_t *options) 
 {
-char compound_errors[ERR_MSG_SUFFIX];
+char compound_errors[ERR_MSG_MAXLEN];
 
 	free((void *)ptrfunc);
 	memset(options->errmsg,'\0', ERR_MSG_MAXLEN);
-	memset(compound_errors,'\0', ERR_MSG_SUFFIX);
+	memset(compound_errors,'\0', ERR_MSG_MAXLEN);
 
 	if((options->input!=stdin)&&(options->input!=NULL))
 		if(fclose(options->input)==EOF)
-			strncat(compound_errors, ERR_CLOSE_INPUT, (strlen(ERR_CLOSE_INPUT)+1));
+			strncat(compound_errors, ERR_CLOSE_INPUT, (strlen(ERR_CLOSE_INPUT)-1));
 
 	if((options->output!=stdout)&&(options->output!=NULL))
 		if(fclose(options->output)==EOF)
@@ -300,7 +300,7 @@ char compound_errors[ERR_MSG_SUFFIX];
 			strncat(compound_errors, ERR_CLOSE_DEV, (strlen(ERR_CLOSE_DEV)+1));
 
 	if(compound_errors[0]!='\0') {
-		strncpy(options->errmsg, ERR_CLOSE, (strlen(ERR_CLOSE)+1));
+		strncpy(options->errmsg, ERR_CLOSE, ERR_MSG_MAXLEN);
 		strncat(options->errmsg, compound_errors, (strlen(compound_errors)+1));
 		return(EXIT_FAILURE);
 	}
@@ -320,47 +320,47 @@ char mode_desc2[40];
 
 	switch((char)cmd) {
 		case 'G':
-			strncpy(&(desc[0]), CMD_GENERATE, (strlen(CMD_GENERATE)+1)); 
+			strncpy(&(desc[0]), CMD_GENERATE, 16); 
 			if (options->cmd_mode == CMD_STD)
-				strncpy(&(mode_desc[0]), VERB_FMT14a, (strlen(VERB_FMT14a)+1)); 
+				strncpy(&(mode_desc[0]), VERB_FMT14a, 81); 
 			else {
-				strncpy(&(mode_desc[0]), VERB_FMT14b, (strlen(VERB_FMT14b)+1)); 
+				strncpy(&(mode_desc[0]), VERB_FMT14b, 81); 
 				if(options->padout_pdotp)
-					strncpy(&(mode_desc2[0]), VERB_FMT14bb, (strlen(VERB_FMT14bb)+1)); 
+					strncpy(&(mode_desc2[0]), VERB_FMT14bb, 40); 
 			}
 			break;
 
 		case 'E':
-			strncpy(&(desc[0]), CMD_ENCRYPT, (strlen(CMD_ENCRYPT)+1)); 
+			strncpy(&(desc[0]), CMD_ENCRYPT, 16); 
 			if (options->cmd_mode == CMD_STD)
-				strncpy(&(mode_desc[0]), VERB_FMT14c, (strlen(VERB_FMT14c)+1)); 
+				strncpy(&(mode_desc[0]), VERB_FMT14c, 81); 
 			else
-				strncpy(&(mode_desc[0]), VERB_FMT14d, (strlen(VERB_FMT14d)+1)); 
+				strncpy(&(mode_desc[0]), VERB_FMT14d, 81); 
 
 			break;
 
 		case 'D':
-			strncpy(&(desc[0]), CMD_DECRYPT, (strlen(CMD_DECRYPT)+1)); 
+			strncpy(&(desc[0]), CMD_DECRYPT, 16); 
 			if (options->sizestr[0]!='\0')
-				strncpy(&(mode_desc[0]), VERB_FMT14ee, (strlen(VERB_FMT14ee)+1));
+				strncpy(&(mode_desc[0]), VERB_FMT14ee, 81);
 			else
-				strncpy(&(mode_desc[0]), VERB_FMT14e, (strlen(VERB_FMT14e)+1)); 
+				strncpy(&(mode_desc[0]), VERB_FMT14e, 81); 
 
 			break;
 
 		case 'P':
-			strncpy(&(desc[0]), CMD_PYX, (strlen(CMD_PYX)+1)); 
+			strncpy(&(desc[0]), CMD_PYX, 16); 
 			if (options->cmd_mode == CMD_STD) {
 				if (options->pyx_binary)
-					strncpy(&(mode_desc[0]), VERB_FMT14g, (strlen(VERB_FMT14g)+1)); 
+					strncpy(&(mode_desc[0]), VERB_FMT14g, 81); 
 				else
-					strncpy(&(mode_desc[0]), VERB_FMT14f, (strlen(VERB_FMT14f)+1)); 
+					strncpy(&(mode_desc[0]), VERB_FMT14f, 81); 
 			}
 			else {
 				if (options->pyx_binary)
-					strncpy(&(mode_desc[0]), VERB_FMT14i, (strlen(VERB_FMT14i)+1)); 
+					strncpy(&(mode_desc[0]), VERB_FMT14i, 81); 
 				else
-					strncpy(&(mode_desc[0]), VERB_FMT14h, (strlen(VERB_FMT14h)+1)); 
+					strncpy(&(mode_desc[0]), VERB_FMT14h, 81); 
 			}
 
 			break;
@@ -411,7 +411,7 @@ int validate_cli_multicmd(int opt, options_t *options, char *progname, int *cmd,
 		case 'P':
 			*cmd=opt;
 			if (++(*onecmd)>1) {
-				strncpy(options->errmsg, ERR_CHK_MULTICMD, (strlen(ERR_CHK_MULTICMD)+1)); 
+				strncpy(options->errmsg, ERR_CHK_MULTICMD, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 
@@ -454,87 +454,87 @@ int validate_cli_multicmd(int opt, options_t *options, char *progname, int *cmd,
 	return(EXIT_SUCCESS);
 }
 
-int validate_cli_options(int opt, options_t *options, char *progname, int *cmd, int *onecmd, char *ver) {
+int validate_cli_options(int opt, options_t *options, char *progname, int *cmd, char *ver) {
 char dname[DEV_PATH_MAX] = DEV_PREFIX_STR;
 
 	switch(opt) {
 		case 'i':
 			if (strlen(optarg)>MAX_FSP_PATH) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_INP, (strlen(ERR_PARAMSIZE_INP)+1)); 
+				strncpy(options->errmsg, ERR_PARAMSIZE_INP, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 
 			if (!(options->input = fopen(optarg, "r")) ) {
-				strncpy(options->errmsg, ERR_FOPEN_INPUT, (strlen(ERR_FOPEN_INPUT)+1)); 
+				strncpy(options->errmsg, ERR_FOPEN_INPUT, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
-			strncpy(options->input_fsp, optarg, (strlen(optarg)+1));
+			strncpy(options->input_fsp, optarg, MAX_FSP_PATH);
 
 			break;
 
 		case 'o':
 			if (strlen(optarg)>MAX_FSP_PATH) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_OUT, (strlen(ERR_PARAMSIZE_OUT)+1)); 
+				strncpy(options->errmsg, ERR_PARAMSIZE_OUT, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 
 			if (!(options->output = fopen(optarg, "w")) ) {
-				strncpy(options->errmsg, ERR_FOPEN_OUTPUT, (strlen(ERR_FOPEN_OUTPUT)+1)); 
+				strncpy(options->errmsg, ERR_FOPEN_OUTPUT, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
-			strncpy(options->output_fsp, optarg, (strlen(optarg)+1));
+			strncpy(options->output_fsp, optarg, MAX_FSP_PATH);
 
 			break;
 
 		case 'p':
 			if (strlen(optarg)>MAX_FSP_PATH) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_OTP, (strlen(ERR_PARAMSIZE_OTP)+1)); 
+				strncpy(options->errmsg, ERR_PARAMSIZE_OTP, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 
 			if (*cmd==(int)'E'&&(options->otp = fopen(optarg, "r"))) {
-				strncpy(options->otp_fsp, optarg, (strlen(optarg)+1));
+				strncpy(options->otp_fsp, optarg, MAX_FSP_PATH);
 				break;
 			} else
 				if (*cmd==(int)'E'&&(options->otp = fopen(optarg, "w"))) {
 					options->cmd_mode=CMD_ALT;
-					strncpy(options->otp_fsp, optarg, (strlen(optarg)+1));
+					strncpy(options->otp_fsp, optarg, MAX_FSP_PATH);
 					break;
 				}
 
 			if (*cmd==(int)'G'&&(options->sizestr[0]!='\0')) {
 				if (!(options->otp = fopen(optarg, "w")) ) {
-					strncpy(options->errmsg, ERR_FOPEN_OTP, (strlen(ERR_FOPEN_OTP)+1)); 
+					strncpy(options->errmsg, ERR_FOPEN_OTP, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
-				strncpy(options->otp_fsp, optarg, (strlen(optarg)+1));
+				strncpy(options->otp_fsp, optarg, MAX_FSP_PATH);
 				break;
 			}
 			else
 				if (*cmd==(int)'G'&&(options->otp = fopen(optarg, "w"))) {
 					options->cmd_mode=CMD_ALT;
-					strncpy(options->otp_fsp, optarg, (strlen(optarg)+1));
+					strncpy(options->otp_fsp, optarg, MAX_FSP_PATH);
 					break;
 				}
 
 			if (!(options->otp = fopen(optarg, "r")) ) {
-				strncpy(options->errmsg, ERR_FOPEN_OTP, (strlen(ERR_FOPEN_OTP)+1)); 
+				strncpy(options->errmsg, ERR_FOPEN_OTP, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
-			strncpy(options->otp_fsp, optarg, (strlen(optarg)+1));
+			strncpy(options->otp_fsp, optarg, MAX_FSP_PATH);
 			break;
 
 		case 'e':
 			if (strlen(optarg)>MAX_FSP_PATH) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_ENC, (strlen(ERR_PARAMSIZE_ENC)+1)); 
+				strncpy(options->errmsg, ERR_PARAMSIZE_ENC, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 
 			if (!(options->encrypted = fopen(optarg, "r")) ) {
-				strncpy(options->errmsg, ERR_FOPEN_ENCRYPTED, (strlen(ERR_FOPEN_ENCRYPTED)+1)); 
+				strncpy(options->errmsg, ERR_FOPEN_ENCRYPTED, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
-			strncpy(options->encrypted_fsp, optarg, (strlen(optarg)+1));
+			strncpy(options->encrypted_fsp, optarg, MAX_FSP_PATH);
 			break;
 			
 		case 'G':
@@ -550,7 +550,7 @@ char dname[DEV_PATH_MAX] = DEV_PREFIX_STR;
 
 		case 'b':
 			if (*cmd!=(int)'P') {
-				strncpy(options->errmsg, ERR_BINARY_SPECIFIED, (strlen(ERR_BINARY_SPECIFIED)+1)); 
+				strncpy(options->errmsg, ERR_BINARY_SPECIFIED, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 			options->pyx_binary = TRUE;
@@ -558,7 +558,7 @@ char dname[DEV_PATH_MAX] = DEV_PREFIX_STR;
 
 		case 'f':
 			if ((*cmd!=(int)'G') && (options->cmd_mode==CMD_STD)) {
-				strncpy(options->errmsg, ERR_PADOTP_SPECIFIED, (strlen(ERR_PADOTP_SPECIFIED)+1)); 
+				strncpy(options->errmsg, ERR_PADOTP_SPECIFIED, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 			options->padout_pdotp = TRUE;
@@ -566,19 +566,20 @@ char dname[DEV_PATH_MAX] = DEV_PREFIX_STR;
 
 		case 'r':
 			if (strlen(optarg)>(DEV_PATH_MAX-strlen(DEV_PREFIX_STR))) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_DEV, (strlen(ERR_PARAMSIZE_DEV)+1)); 
+				strncpy(options->errmsg, ERR_PARAMSIZE_DEV, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 
 			if (optarg!=NULL) {
-				strncpy(options->devname, (strncat(&dname[0],optarg,DEV_PATH_MAX)), DEV_PATH_MAX);
+				strncat(dname, optarg, (strlen(dname)+1));
+				strncpy(options->devname, dname, DEV_PATH_MAX);
 				if ((options->device = open(options->devname, O_RDONLY)) < 0 ) {
-					strncpy(options->errmsg, ERR_CHK_DEV, (strlen(ERR_CHK_DEV)+1)); 
+					strncpy(options->errmsg, ERR_CHK_DEV, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
 			}
 			else {
-				strncpy(options->errmsg, ERR_CHK_DEV, (strlen(ERR_CHK_DEV)+1)); 
+				strncpy(options->errmsg, ERR_CHK_DEV, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 
@@ -586,7 +587,7 @@ char dname[DEV_PATH_MAX] = DEV_PREFIX_STR;
 
 		case 's':
 			if (strlen(optarg)>SIZE_LEN) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_SIZ, (strlen(ERR_PARAMSIZE_SIZ)+1)); 
+				strncpy(options->errmsg, ERR_PARAMSIZE_SIZ, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 
@@ -595,7 +596,7 @@ char dname[DEV_PATH_MAX] = DEV_PREFIX_STR;
 				options->size = (unsigned long long)strtoul(options->sizestr, NULL, 10);
 
 				if (factor_suffix(options) != EXIT_SUCCESS) {
-					strncpy(options->errmsg, ERR_CHK_SIZE, (strlen(ERR_CHK_SIZE)+1)); 
+					strncpy(options->errmsg, ERR_CHK_SIZE, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
 			} 
@@ -616,7 +617,7 @@ int	validate_cli_command(int cmd, options_t *options) {
 	switch(cmd) {
 		case 'P':
 			if ((options->input!=stdin)||(options->otp==stdin)||(options->encrypted!=stdin)) {
-				strncpy(options->errmsg, ERR_CHK_PCMD, (strlen(ERR_CHK_PCMD)+1)); 
+				strncpy(options->errmsg, ERR_CHK_PCMD, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 
@@ -628,7 +629,7 @@ int	validate_cli_command(int cmd, options_t *options) {
 
 		case 'D':
 			if (((options->input==stdin)||(options->otp==stdin)||(options->output==stdout))||(options->encrypted!=stdin)) {
-				strncpy(options->errmsg, ERR_CHK_DCMD, (strlen(ERR_CHK_DCMD)+1)); 
+				strncpy(options->errmsg, ERR_CHK_DCMD, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 
@@ -638,7 +639,7 @@ int	validate_cli_command(int cmd, options_t *options) {
 
 		case 'E':
 			if ((options->input==stdin)||(options->output==stdout)||(options->otp==stdin)) {
-				strncpy(options->errmsg, ERR_CHK_ECMD, (strlen(ERR_CHK_ECMD)+1)); 
+				strncpy(options->errmsg, ERR_CHK_ECMD, ERR_MSG_MAXLEN); 
 				return(EXIT_FAILURE);
 			}
 			else {
@@ -651,18 +652,18 @@ int	validate_cli_command(int cmd, options_t *options) {
 		case 'G':
 			if (options->sizestr[0]!='\0') {
 				if (options->otp==stdin) {
-					strncpy(options->errmsg, ERR_CHK_GCMD, (strlen(ERR_CHK_GCMD)+1)); 
+					strncpy(options->errmsg, ERR_CHK_GCMD, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
 
 				if ((options->output!=stdout)||(options->encrypted!=stdin)||(options->input!=stdin)) {
-					strncpy(options->errmsg, ERR_CHK_GCMD, (strlen(ERR_CHK_GCMD)+1)); 
+					strncpy(options->errmsg, ERR_CHK_GCMD, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
 			}
 			else {
 				if ((options->input==stdin)||(options->encrypted==stdin)||(options->otp==stdin)||(options->output!=stdout)) {
-					strncpy(options->errmsg, ERR_CHK_GCMD, (strlen(ERR_CHK_GCMD)+1)); 
+					strncpy(options->errmsg, ERR_CHK_GCMD, ERR_MSG_MAXLEN); 
 					return(EXIT_FAILURE);
 				}
 				options->cmd_mode=CMD_ALT;
