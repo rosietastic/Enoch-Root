@@ -1,7 +1,7 @@
 /*
  * libenoch.c
  * 
- * Copyright 2021 Paul Rose <rosietastic@lavabit.com>
+ * Copyright 2021 Paul Rose <rose.apply@googlemail.com>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,6 @@
 #define ERR_WRITE_ENC 	"Error writing encrypted file"
 #define ERR_OTP_SHORT 	"Warning - OTP file is short for input encrypted file"
 #define ERR_WRITE_DEC 	"Error writing decrypted file"
-#define ERR_READ_INPUT 	"Error reading input clear file"
 #define PI				3.14159265358979323846
 #define PASS			"PASS"
 #define FAIL			"FAIL"
@@ -361,8 +360,10 @@ void pyx_end	(double *r_ent, double *r_chisq, double *r_mean,
 
 	/* 	Calculate Monte Carlo value for PI from percentage of hits
 		within the circle */
-
-	montepi = 4.0 * (((double) inmont) / mcount);
+	if (mcount == 0)
+		montepi = 0.0;
+	else
+		montepi = 4.0 * (((double) inmont) / mcount);
 
 	/* Return results through arguments */
 
@@ -375,13 +376,17 @@ void pyx_end	(double *r_ent, double *r_chisq, double *r_mean,
 
 int set_default_device(options_t *options) 
 {
-	strncpy(options->devname, DEV_DEFAULT_1, DEV_PATH_MAX);
-	if ((options->device = open(options->devname, O_RDONLY)) < 0) {
-		strncpy(options->devname, DEV_DEFAULT_2, DEV_PATH_MAX);
-		if ((options->device = open(options->devname, O_RDONLY)) < 0) {
-			strncpy(options->errmsg, ERR_DEF_DEV, ERR_MSG_MAXLEN); 
+	snprintf(options->devname, sizeof(options->devname), "%s", DEV_DEFAULT_1);
+	if ((options->device = open(options->devname, O_RDONLY | O_CLOEXEC)) < 0) {
+		snprintf(options->devname, sizeof(options->devname), "%s", DEV_DEFAULT_2);
+
+		if ((options->device = open(options->devname, O_RDONLY | O_CLOEXEC)) < 0) {
+			snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_DEF_DEV);
 			return(EXIT_FAILURE);
 		}    
+
+
+
 	}
 
 	return(EXIT_SUCCESS);
@@ -409,11 +414,11 @@ struct stat sb;
 		while (keep_count-- > 0) {
 			if (read(options->device, &byte, 1) > 0) {
 				if (fputc(byte, options->otp) == EOF) {
-					strncpy(options->errmsg, ERR_WRITE_OTP, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_WRITE_OTP);
 					return(EXIT_FAILURE);
 				}
 			} else {
-				strncpy(options->errmsg, ERR_GET_DEV, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_GET_DEV);
 				return(EXIT_FAILURE);
 			}
 		}
@@ -426,28 +431,28 @@ struct stat sb;
 			keep_count++;
 			if ((enc_ch = fgetc(options->encrypted) ) != EOF) {
 				if (fputc((clear_ch^enc_ch), options->otp) == EOF) {
-					strncpy(options->errmsg, ERR_WRITE_PDOTP, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_WRITE_PDOTP);
 					return(EXIT_FAILURE);
 				}
 			} else {
-				strncpy(options->errmsg, ERR_ENC_SHORT, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_ENC_SHORT);
 				return(EXIT_FAILURE);
 			}
 		}
 
 		if (keep_count == 0) {
-			strncpy(options->errmsg, ERR_READ_INPUT, ERR_MSG_MAXLEN); 
+			snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_READ_INPUT);
 			return(EXIT_FAILURE);
 		} else
 			if(options->padout_pdotp) {
 				if (stat(options->encrypted_fsp, &sb)==-1) {
-					strncpy(options->errmsg, ERR_READ_STAT, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_READ_STAT);
 					return(EXIT_FAILURE);
 				}			
 				for(i=keep_count; i<(unsigned long long)sb.st_size; i++) {
 					if (read(options->device, &byte, 1) > 0) {
 						if (fputc(byte, options->otp) == EOF) {
-							strncpy(options->errmsg, ERR_WRITE_OTP, ERR_MSG_MAXLEN); 
+							snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_WRITE_OTP);
 							return(EXIT_FAILURE);
 						}
 					}
@@ -475,17 +480,17 @@ int inp_fine = FALSE;
 			inp_fine = TRUE;
 			if ((otp_ch = fgetc(options->otp) ) != EOF) {
 				if ((fputc((clear_ch^otp_ch), options->output)) == EOF) {
-					strncpy(options->errmsg, ERR_WRITE_ENC, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_WRITE_ENC);
 					return(EXIT_FAILURE);
 				}
 			} else {
-				strncpy(options->errmsg, ERR_OTP_SHORT, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_OTP_SHORT);
 				return(EXIT_FAILURE);
 			}
 		}
 
 		if (inp_fine == FALSE) {
-			strncpy(options->errmsg, ERR_READ_INPUT, ERR_MSG_MAXLEN); 
+			snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_READ_INPUT);
 			return(EXIT_FAILURE);
 		}
 
@@ -496,15 +501,15 @@ int inp_fine = FALSE;
 		while ((clear_ch = fgetc(options->input) ) != EOF) {
 			if (read(options->device, &byte, 1) > 0) {
 				if (fputc(byte, options->otp) == EOF) {
-					strncpy(options->errmsg, ERR_WRITE_OTP, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_WRITE_OTP);
 					return(EXIT_FAILURE);
 				}
 				if (fputc(clear_ch^byte, options->output) == EOF) {
-					strncpy(options->errmsg, ERR_WRITE_ENC, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_WRITE_ENC);
 					return(EXIT_FAILURE);
 				}
 			} else {
-				strncpy(options->errmsg, ERR_GET_DEV, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_GET_DEV);
 				return(EXIT_FAILURE);
 			}
 		}
@@ -529,22 +534,22 @@ struct stat sb;
 
 	if(options->size>0) {
 		if (stat(options->input_fsp, &sb)==-1) {
-			strncpy(options->errmsg, ERR_READ_STAT, ERR_MSG_MAXLEN); 
+			snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_READ_STAT);
 			return(EXIT_FAILURE);
 		}
 
 		if(options->size>(unsigned long long)sb.st_size) {
-			strncpy(options->errmsg, ERR_ENC_SIZE, ERR_MSG_MAXLEN); 
+			snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_ENC_SIZE);
 			return(EXIT_FAILURE);
 		}
 
 		if (stat(options->otp_fsp, &sb)==-1) {
-			strncpy(options->errmsg, ERR_OTP_STAT, ERR_MSG_MAXLEN); 
+			snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_OTP_STAT);
 			return(EXIT_FAILURE);
 		}
 
 		if(options->size>(unsigned long long)sb.st_size) {
-			strncpy(options->errmsg, ERR_OTP_SIZE, ERR_MSG_MAXLEN); 
+			snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_OTP_SIZE);
 			return(EXIT_FAILURE);
 		}
 	}
@@ -553,20 +558,20 @@ struct stat sb;
 		inp_fine = TRUE;
 		if ((otp_ch = fgetc(options->otp) ) != EOF) {
 			if ((fputc((enc_ch^otp_ch), options->output)) == EOF) {
-				strncpy(options->errmsg, ERR_WRITE_DEC, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_WRITE_DEC);
 				return(EXIT_FAILURE);
 			}
 			if (options->size >0)
 				if ((++keep_count)>=options->size)
 						break;
 		} else {
-			strncpy(options->errmsg, ERR_OTP_SHORT, ERR_MSG_MAXLEN); 
+			snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_OTP_SHORT);
 			return(EXIT_FAILURE);
 		}
 	}
 
 	if (inp_fine == FALSE) {
-		strncpy(options->errmsg, ERR_READ_INPUT, ERR_MSG_MAXLEN); 
+		snprintf(options->errmsg, sizeof(options->errmsg), "%s", ERR_READ_INPUT);
 		return(EXIT_FAILURE);
 	}
 
@@ -634,7 +639,7 @@ int	p_pyx(options_t *options)
 		result[0] = (ent <= 7.5)?FALSE:TRUE;
 		result[1] = (((short) ((100 * ((options->pyx_binary ? 1 : 8) - ent) / (options->pyx_binary ? 1.0 : 8.0)))) > 1)?FALSE:TRUE;
 		result[2] = ((chip * 100 <= 10) || (chip * 100 >= 90))?FALSE:TRUE;
-		result[3] = (((options->pyx_binary)&&(mean <= 4.5)&&(mean >= 5.5))||((!options->pyx_binary)&&(mean <= 127)&&(mean >= 128)))?FALSE:TRUE;
+		result[3] = (((options->pyx_binary)&&(mean >= 4.5)&&(mean <= 5.5))||((!options->pyx_binary)&&(mean <= 127)&&(mean >= 128)))?FALSE:TRUE;
 		result[4] = (((100.0 * (fabs(PI - montepi) / PI)) > 0.3)&&((100.0 * (fabs(PI - montepi) / PI)) > 0.01))?FALSE:TRUE;
 		result[5] = (scc >= 0.1)?FALSE:TRUE;
 
