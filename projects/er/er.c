@@ -1,7 +1,7 @@
 /*
  * er.c
  * 
- * Copyright 2021 Paul Rose <rosietastic@lavabit.com>
+ * Copyright 2021 Paul Rose <rose.apply@googlemail.com>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  * 
  */
 
-/* er : Equivocable dual acronym. "Encrypt Right" and "Enoch Root" */
+/* er : Equivocal dual acronym. "Encrypt Right" and "Enoch Root" */
 /* er : One Time Pad management to encrypt, decrypt, assess and deny */
 
 #include <stdio.h>
@@ -33,6 +33,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <ctype.h>
 #include <math.h>
 #include "libenoch.h"
@@ -78,8 +79,8 @@
 #define TRUE			1
 #define START			0
 #define END				1
-#define USAGE_FMT0 "%s : Equivocable dual acronym \"Encrypt Right\"/\"Enoch Root\" (v%s;libenoch:v%s)\n"
-#define USAGE_FMT9 "%s : Equivocable dual acronym \"Encrypt Right\"/\"Enoch Root\" (v%s)\n"
+#define USAGE_FMT0 "%s : Equivocal dual acronym \"Encrypt Right\"/\"Enoch Root\" (v%s;libenoch:v%s)\n"
+#define USAGE_FMT9 "%s : Equivocal dual acronym \"Encrypt Right\"/\"Enoch Root\" (v%s)\n"
 #define USAGE_FMT1 "%s : -G : Generate OTP/PD OTP, -E : Encrypt, -D : Decrypt, -P : Pyx\n[-i inputfile] [-e inputfile] [-p otp file] [-o outputfile]\n[-s size] [-r devname] [-v] [-b] [-f] [-h]\n\n"
 #define USAGE_FMT2 "-G -s<size BKMG> -pfsp || -G -ifsp -efsp -pfsp -f\n[-G -s1M -pnew.otp]\n[-G -iclear.in -eexisting.enc -pnew.otp -f]\n\n"
 #define USAGE_FMT3 "-E -ifsp -pfsp -ofsp  || -E -ifsp -pnewfsp -ofsp\n[-E -iclear.in -pexisting.otp -oencrypted.out]\n[-E -iclear.in -pnew.otp -oencrypted.out]\n\n"
@@ -89,8 +90,8 @@
 #define USAGE_FMT7 "%s : One Time Pad management to generate, encrypt, decrypt, assess and deny\n"
 
 #define VERB_FMT10 "%s : \"Encrypt Right\"/\"Enoch Root\"\n"
-#define VERB_FMT10a "(An equivocable dual acronym)\n"
-#define VERB_FMT10b "(C)2021 Paul Rose <rosietastic@lavabit.com>\n"
+#define VERB_FMT10a "(An equivocal dual acronym)\n"
+#define VERB_FMT10b "(C)2021 Paul Rose <rose.apply@googlemail.com>\n"
 #define VERB_FMT11 "%s : v%s; libenoch : v%s\n\n"
 #define VERB_FMT12 "RNG device is %s\n"
 #define VERB_FMT13 "Command selected is %c : %s\n"
@@ -172,7 +173,16 @@ int	main(int argc, char *argv[]) {
 	ptrfunc[2] = &d_decrypt;
 	ptrfunc[3] = &p_pyx;
 
-	options_t options = { FALSE, "", "", "", 0LL, ZCMD, CMD_STD, FALSE, FALSE, stdin, stdout, stdin, stdin, 0, "", "", "", "" };
+	options_t options;
+	memset(&options, 0, sizeof(options));
+
+	options.input  = stdin;
+	options.output = stdout;
+	options.otp    = stdin;
+	options.encrypted = stdin;
+	options.cmd_index = ZCMD;
+	options.cmd_mode  = CMD_STD;
+
 	opterr = onecmd = 0;
 	memset(options.devname,	'\0', DEV_PATH_MAX);
 	memset(options.sizestr,	'\0', SIZE_LEN);
@@ -236,7 +246,7 @@ int	main(int argc, char *argv[]) {
 	}
 
 	if (options.cmd_index==ZCMD) {
-		strncpy(options.errmsg, ERR_CHK_ZCMD, ERR_MSG_MAXLEN); 
+		snprintf(options.errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_ZCMD);
 		fprintf(stderr,"%s\n", options.errmsg);
 		if(tidy_up(ptrfunc, &options)!=EXIT_SUCCESS)
 			fprintf(stderr,"%s\n", options.errmsg);
@@ -281,26 +291,26 @@ char compound_errors[ERR_MSG_MAXLEN];
 
 	if((options->input!=stdin)&&(options->input!=NULL))
 		if(fclose(options->input)==EOF)
-			strncat(compound_errors, ERR_CLOSE_INPUT, (strlen(ERR_CLOSE_INPUT)-1));
+			strncat(compound_errors, ERR_CLOSE_INPUT, ERR_MSG_MAXLEN - strlen(compound_errors) - 1);
 
 	if((options->output!=stdout)&&(options->output!=NULL))
 		if(fclose(options->output)==EOF)
-			strncat(compound_errors, ERR_CLOSE_OUTPUT, (strlen(ERR_CLOSE_OUTPUT)+1));
+			strncat(compound_errors, ERR_CLOSE_OUTPUT, ERR_MSG_MAXLEN - strlen(compound_errors) - 1);
 
 	if((options->otp!=stdin)&&(options->otp!=NULL))
 		if(fclose(options->otp)==EOF)
-			strncat(compound_errors, ERR_CLOSE_OTP, (strlen(ERR_CLOSE_OTP)+1));
+			strncat(compound_errors, ERR_CLOSE_OTP, ERR_MSG_MAXLEN - strlen(compound_errors) - 1);
 
 	if((options->encrypted!=stdin)&&(options->encrypted!=NULL))
 		if(fclose(options->encrypted)==EOF)
-			strncat(compound_errors, ERR_CLOSE_ENCRYPT, (strlen(ERR_CLOSE_ENCRYPT)+1));
+			strncat(compound_errors, ERR_CLOSE_ENCRYPT, ERR_MSG_MAXLEN - strlen(compound_errors) - 1);
 
-	if(options->device > 0)
+	if(options->device >= 0)
 		if(close(options->device)==-1)
-			strncat(compound_errors, ERR_CLOSE_DEV, (strlen(ERR_CLOSE_DEV)+1));
+			strncat(compound_errors, ERR_CLOSE_DEV, ERR_MSG_MAXLEN - strlen(compound_errors) - 1);
 
 	if(compound_errors[0]!='\0') {
-		strncpy(options->errmsg, ERR_CLOSE, ERR_MSG_MAXLEN);
+		snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CLOSE);
 		strncat(options->errmsg, compound_errors, (strlen(compound_errors)+1));
 		return(EXIT_FAILURE);
 	}
@@ -411,7 +421,7 @@ int validate_cli_multicmd(int opt, options_t *options, char *progname, int *cmd,
 		case 'P':
 			*cmd=opt;
 			if (++(*onecmd)>1) {
-				strncpy(options->errmsg, ERR_CHK_MULTICMD, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_MULTICMD);
 				return(EXIT_FAILURE);
 			}
 
@@ -455,86 +465,84 @@ int validate_cli_multicmd(int opt, options_t *options, char *progname, int *cmd,
 }
 
 int validate_cli_options(int opt, options_t *options, char *progname, int *cmd, char *ver) {
-char dname[DEV_PATH_MAX] = DEV_PREFIX_STR;
-
+struct stat st;
+size_t len;
 	switch(opt) {
 		case 'i':
 			if (strlen(optarg)>MAX_FSP_PATH) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_INP, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_PARAMSIZE_INP);
 				return(EXIT_FAILURE);
 			}
 
 			if (!(options->input = fopen(optarg, "r")) ) {
-				strncpy(options->errmsg, ERR_FOPEN_INPUT, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_FOPEN_INPUT);
 				return(EXIT_FAILURE);
 			}
-			strncpy(options->input_fsp, optarg, MAX_FSP_PATH);
-
+			snprintf(options->input_fsp, MAX_FSP_PATH, "%s", optarg);
 			break;
 
 		case 'o':
 			if (strlen(optarg)>MAX_FSP_PATH) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_OUT, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_PARAMSIZE_OUT);
 				return(EXIT_FAILURE);
 			}
 
 			if (!(options->output = fopen(optarg, "w")) ) {
-				strncpy(options->errmsg, ERR_FOPEN_OUTPUT, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_FOPEN_OUTPUT);
 				return(EXIT_FAILURE);
 			}
-			strncpy(options->output_fsp, optarg, MAX_FSP_PATH);
-
+			snprintf(options->output_fsp, MAX_FSP_PATH, "%s", optarg);
 			break;
 
 		case 'p':
 			if (strlen(optarg)>MAX_FSP_PATH) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_OTP, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_PARAMSIZE_OTP);
 				return(EXIT_FAILURE);
 			}
 
 			if (*cmd==(int)'E'&&(options->otp = fopen(optarg, "r"))) {
-				strncpy(options->otp_fsp, optarg, MAX_FSP_PATH);
+				snprintf(options->otp_fsp, MAX_FSP_PATH, "%s", optarg);
 				break;
 			} else
 				if (*cmd==(int)'E'&&(options->otp = fopen(optarg, "w"))) {
 					options->cmd_mode=CMD_ALT;
-					strncpy(options->otp_fsp, optarg, MAX_FSP_PATH);
+					snprintf(options->otp_fsp, MAX_FSP_PATH, "%s", optarg);
 					break;
 				}
 
 			if (*cmd==(int)'G'&&(options->sizestr[0]!='\0')) {
 				if (!(options->otp = fopen(optarg, "w")) ) {
-					strncpy(options->errmsg, ERR_FOPEN_OTP, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_FOPEN_OTP);
 					return(EXIT_FAILURE);
 				}
-				strncpy(options->otp_fsp, optarg, MAX_FSP_PATH);
+				snprintf(options->otp_fsp, MAX_FSP_PATH, "%s", optarg);
 				break;
 			}
 			else
 				if (*cmd==(int)'G'&&(options->otp = fopen(optarg, "w"))) {
 					options->cmd_mode=CMD_ALT;
-					strncpy(options->otp_fsp, optarg, MAX_FSP_PATH);
+					snprintf(options->otp_fsp, MAX_FSP_PATH, "%s", optarg);
 					break;
 				}
 
 			if (!(options->otp = fopen(optarg, "r")) ) {
-				strncpy(options->errmsg, ERR_FOPEN_OTP, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_FOPEN_OTP);
 				return(EXIT_FAILURE);
 			}
-			strncpy(options->otp_fsp, optarg, MAX_FSP_PATH);
+			snprintf(options->otp_fsp, MAX_FSP_PATH, "%s", optarg);
 			break;
 
 		case 'e':
 			if (strlen(optarg)>MAX_FSP_PATH) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_ENC, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_PARAMSIZE_ENC);
 				return(EXIT_FAILURE);
 			}
 
 			if (!(options->encrypted = fopen(optarg, "r")) ) {
-				strncpy(options->errmsg, ERR_FOPEN_ENCRYPTED, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_FOPEN_ENCRYPTED);
 				return(EXIT_FAILURE);
 			}
-			strncpy(options->encrypted_fsp, optarg, MAX_FSP_PATH);
+			snprintf(options->encrypted_fsp, MAX_FSP_PATH, "%s", optarg);
 			break;
 			
 		case 'G':
@@ -550,44 +558,54 @@ char dname[DEV_PATH_MAX] = DEV_PREFIX_STR;
 
 		case 'b':
 			if (*cmd!=(int)'P') {
-				strncpy(options->errmsg, ERR_BINARY_SPECIFIED, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_BINARY_SPECIFIED);
 				return(EXIT_FAILURE);
 			}
 			options->pyx_binary = TRUE;
 			break;
 
-		case 'f':
-			if ((*cmd!=(int)'G') && (options->cmd_mode==CMD_STD)) {
-				strncpy(options->errmsg, ERR_PADOTP_SPECIFIED, ERR_MSG_MAXLEN); 
-				return(EXIT_FAILURE);
-			}
-			options->padout_pdotp = TRUE;
-			break;
-
 		case 'r':
-			if (strlen(optarg)>(DEV_PATH_MAX-strlen(DEV_PREFIX_STR))) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_DEV, ERR_MSG_MAXLEN); 
+    			if (optarg == NULL) {
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_DEV);
+        			return(EXIT_FAILURE);
+    			}
+
+			len = strlen(optarg);
+
+			if (len == 0 || len >= DEV_PATH_MAX) {
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_PARAMSIZE_DEV);
 				return(EXIT_FAILURE);
 			}
 
-			if (optarg!=NULL) {
-				strncat(dname, optarg, (strlen(dname)+1));
-				strncpy(options->devname, dname, DEV_PATH_MAX);
-				if ((options->device = open(options->devname, O_RDONLY)) < 0 ) {
-					strncpy(options->errmsg, ERR_CHK_DEV, ERR_MSG_MAXLEN); 
-					return(EXIT_FAILURE);
+			if (optarg[0] == '/') {
+				if (snprintf(options->devname, DEV_PATH_MAX, "%s", optarg) >= DEV_PATH_MAX) {
+					snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_PARAMSIZE_DEV);
+					return EXIT_FAILURE;
+				}
+			} else {
+				if (snprintf(options->devname, DEV_PATH_MAX, "%s%s", DEV_PREFIX_STR, optarg) >= DEV_PATH_MAX) {
+					snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_PARAMSIZE_DEV);
+					return EXIT_FAILURE;
 				}
 			}
-			else {
-				strncpy(options->errmsg, ERR_CHK_DEV, ERR_MSG_MAXLEN); 
-				return(EXIT_FAILURE);
+
+			options->device = open(options->devname, O_RDONLY | O_CLOEXEC);
+
+    			if (options->device < 0 ) {
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_DEV);
+        			return(EXIT_FAILURE);
+    			}
+
+			if (fstat(options->device, &st) != 0 || !S_ISCHR(st.st_mode)) {
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_DEV);
+        			return(EXIT_FAILURE);
 			}
 
-			break;
+    			break;
 
 		case 's':
 			if (strlen(optarg)>SIZE_LEN) {
-				strncpy(options->errmsg, ERR_PARAMSIZE_SIZ, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_PARAMSIZE_SIZ);
 				return(EXIT_FAILURE);
 			}
 
@@ -596,7 +614,7 @@ char dname[DEV_PATH_MAX] = DEV_PREFIX_STR;
 				options->size = (unsigned long long)strtoul(options->sizestr, NULL, 10);
 
 				if (factor_suffix(options) != EXIT_SUCCESS) {
-					strncpy(options->errmsg, ERR_CHK_SIZE, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_SIZE);
 					return(EXIT_FAILURE);
 				}
 			} 
@@ -617,7 +635,7 @@ int	validate_cli_command(int cmd, options_t *options) {
 	switch(cmd) {
 		case 'P':
 			if ((options->input!=stdin)||(options->otp==stdin)||(options->encrypted!=stdin)) {
-				strncpy(options->errmsg, ERR_CHK_PCMD, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_PCMD);
 				return(EXIT_FAILURE);
 			}
 
@@ -629,7 +647,7 @@ int	validate_cli_command(int cmd, options_t *options) {
 
 		case 'D':
 			if (((options->input==stdin)||(options->otp==stdin)||(options->output==stdout))||(options->encrypted!=stdin)) {
-				strncpy(options->errmsg, ERR_CHK_DCMD, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_DCMD);
 				return(EXIT_FAILURE);
 			}
 
@@ -639,7 +657,7 @@ int	validate_cli_command(int cmd, options_t *options) {
 
 		case 'E':
 			if ((options->input==stdin)||(options->output==stdout)||(options->otp==stdin)) {
-				strncpy(options->errmsg, ERR_CHK_ECMD, ERR_MSG_MAXLEN); 
+				snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_ECMD);
 				return(EXIT_FAILURE);
 			}
 			else {
@@ -652,18 +670,18 @@ int	validate_cli_command(int cmd, options_t *options) {
 		case 'G':
 			if (options->sizestr[0]!='\0') {
 				if (options->otp==stdin) {
-					strncpy(options->errmsg, ERR_CHK_GCMD, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_GCMD);
 					return(EXIT_FAILURE);
 				}
 
 				if ((options->output!=stdout)||(options->encrypted!=stdin)||(options->input!=stdin)) {
-					strncpy(options->errmsg, ERR_CHK_GCMD, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_GCMD);
 					return(EXIT_FAILURE);
 				}
 			}
 			else {
 				if ((options->input==stdin)||(options->encrypted==stdin)||(options->otp==stdin)||(options->output!=stdout)) {
-					strncpy(options->errmsg, ERR_CHK_GCMD, ERR_MSG_MAXLEN); 
+					snprintf(options->errmsg, ERR_MSG_MAXLEN, "%s", ERR_CHK_GCMD);
 					return(EXIT_FAILURE);
 				}
 				options->cmd_mode=CMD_ALT;
@@ -693,7 +711,7 @@ int factor;
 
 	factor=1;
 
-	if (options->sizestr==NULL) 
+	if (options->sizestr[0] == '\0')
 		return (EXIT_FAILURE);
 
 	switch ((char)toupper(*(options->sizestr+(strlen(options->sizestr)-1)))) {
