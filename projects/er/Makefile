@@ -9,7 +9,7 @@ RM = rm -f   # rm command
 SRCS = er.c  # source files
 OBJS = $(SRCS:.c=.o)
 
-LDFLAGS = -lm -lenoch
+LDFLAGS = -lenoch -lm
 
 er: $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
