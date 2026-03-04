@@ -2,7 +2,7 @@
 Enoch Root related Cryptography
 
 Contact me (Paul Rose / "rosietastic") :
-rosietastic@lavabit.com
+rose.apply@googlemail.com
 
 A repository to house er ("encrypt right" / "enoch root") code, including:
 
@@ -21,7 +21,7 @@ One Time Pad management to encrypt, decrypt, assess and deny.
 
 **Why a Dual Acronym?**
 
-In a nod to er's plausible deniability function, even its name is equivocable.
+In a nod to er's plausible deniability function, even its name is equivocal.
 
 **Why Enoch Root?**
 
@@ -71,7 +71,7 @@ Additional flags include verbose output (-v), selection of pyx assessment byte o
 
 **Random Number Generation**
 
-While standard Linux random number generation (/dev/random) can be used, the er utility defaults to use of the "TrueRNG3" hardware random number generator (HRNG) if present (/dev/TrueRNG). TrueRNG3 provides hardware random number generation by leveraging the "avalanche effect" of semi-conductors. TrueRNG3 is fast and performs very well at the Pyx Assessment.
+While standard Linux random number generation (/dev/random) can be used, the er utility defaults to use of the "TrueRNG3" hardware random number generator (HRNG) if present (/dev/TrueRNG). TrueRNG3 provides hardware random number generation by leveraging the "avalanche effect" of semi-conductors. TrueRNG3 is fast and performs very well at the Pyx Assessment. Other character based TrueRNG devices can be utilised (/dev/TrueRNG0) with the "-r" flag.
 
 https://ubld.it/truerng_v3
 
@@ -80,7 +80,7 @@ https://ubld.it/truerng_v3
 
 	er -h
 
-er : Equivocable dual acronym "Encrypt Right"/"Enoch Root" (v0.1;libenoch:v0.1)
+er : Equivocal dual acronym "Encrypt Right"/"Enoch Root" (v0.1;libenoch:v0.1)
 
 er : -G : Generate OTP/PD OTP, -E : Encrypt, -D : Decrypt, -P : Pyx
 
